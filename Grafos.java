@@ -6,12 +6,9 @@ Autora: Luiza Hackenhaar Naziazeno
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Queue;
 import java.util.LinkedList;
-
-
 
 public class Grafos {
 
@@ -19,13 +16,13 @@ public class Grafos {
     private boolean[] visitados;
     private int[] anteriores;
     private int[] custo;
-     public static void main(String[] args) {
+
+    public static void main(String[] args) {
         final String ANSI_PURPLE = "\u001B[35m";
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_CYAN = "\u001B[36m";
-        final String ANSI_BLUE = "\u001B[34m";
-
+        // final String ANSI_BLUE = "\u001B[34m"; // Removed because it is not used
         Scanner scanner = new Scanner(System.in);
 
         System.out.println(ANSI_PURPLE + "=========================================");
@@ -86,19 +83,76 @@ public class Grafos {
 
         scanner.close();
     }
-    
+
     public static void processarArquivo(String caminhoArquivo) throws IOException {
-        String pasta = "C:\\projects\\Facul\\T2 Jb\\Nos-Passos-Dos-Gigantes\\casosdeteste\\"; // Defina o nome da pasta onde estão os arquivos
-        BufferedReader reader = new BufferedReader(new FileReader(pasta + caminhoArquivo));
-        String linha;
-        while ((linha = reader.readLine()) != null) {
-            System.out.println(linha);
+        final String ANSI_PURPLE = "\u001B[35m";
+        final String ANSI_RED = "\u001B[31m";
+        final String ANSI_GREEN = "\u001B[32m";
+        final String ANSI_CYAN = "\u001B[36m";
+        final String ANSI_BLUE = "\u001B[34m";
+
+        String pasta = "C:\\projects\\Facul\\T2 Jb\\Nos-Passos-Dos-Gigantes\\casosdeteste\\";
+        try (BufferedReader reader = new BufferedReader(new FileReader(pasta + caminhoArquivo))) {
+            String linha = reader.readLine();
+            if (linha == null) {
+                System.out.println(ANSI_RED + "Arquivo vazio.");
+                return;
+            }
+
+            // A primeira linha contém a quantidade de linhas e colunas
+            String[] dimensoes = linha.trim().split("\\s+");
+            if (dimensoes.length < 2) {
+                System.out.println(ANSI_RED + "Formato inválido da primeira linha. Esperado: <linhas> <colunas>");
+                return;
+            }
+            int linhas = Integer.parseInt(dimensoes[0]);
+            int colunas = Integer.parseInt(dimensoes[1]);
+            int numVertices = linhas * colunas;
+            DigrafoValorado grafo = new DigrafoValorado(numVertices);
+
+            int linhaAtual = 0;
+            while ((linha = reader.readLine()) != null && linhaAtual < linhas) {
+                String[] pesos = linha.trim().split("\\s+");
+                for (int coluna = 0; coluna < colunas; coluna++) {
+                    int v = linhaAtual * colunas + coluna;
+                    int peso;
+                    if (coluna >= pesos.length) {
+                        System.out.println(ANSI_RED + "Coluna " + (coluna + 1) + " não encontrada na linha " + (linhaAtual + 2) + ". Pulando este valor.");
+                        continue;
+                    }
+                    String valor = pesos[coluna];
+                    try {
+                        peso = Integer.parseInt(valor);
+                    } catch (NumberFormatException e) {
+                        System.out.println(ANSI_RED + "Valor inválido encontrado na linha " + (linhaAtual + 2) + ", coluna " + (coluna + 1) + ": '" + valor + "'. Pulando este valor.");
+                        continue;
+                    }
+                    // Adiciona arestas para cima, baixo, esquerda, direita se existirem
+                    if (linhaAtual > 0) { // cima
+                        int w = (linhaAtual - 1) * colunas + coluna;
+                        grafo.adicionarAresta(v, w, peso);
+                    }
+                    if (linhaAtual < linhas - 1) { // baixo
+                        int w = (linhaAtual + 1) * colunas + coluna;
+                        grafo.adicionarAresta(v, w, peso);
+                    }
+                    if (coluna > 0) { // esquerda
+                        int w = linhaAtual * colunas + (coluna - 1);
+                        grafo.adicionarAresta(v, w, peso);
+                    }
+                    if (coluna < colunas - 1) { // direita
+                        int w = linhaAtual * colunas + (coluna + 1);
+                        grafo.adicionarAresta(v, w, peso);
+                    }
+                }
+            }
+
+            Grafos g = new Grafos();
+            g.Bfs(grafo, 0); // Começa do vértice 0
         }
-        reader.close();
     }
 
-
-    public void Bfs(DigrafoValorado grafo, int origem){
+    public void Bfs(DigrafoValorado grafo, int origem) {
         final String ANSI_PURPLE = "\u001B[35m";
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_GREEN = "\u001B[32m";
@@ -118,8 +172,8 @@ public class Grafos {
         while (!fila.isEmpty()) {
             int v = fila.poll();
             visitados[v] = true;
-            for(DigrafoValorado.Aresta aresta: grafo.adjacentes(v)) {
-                if(!visitados[aresta.w]) {
+            for (DigrafoValorado.Aresta aresta : grafo.adjacentes(v)) {
+                if (!visitados[aresta.w]) {
                     fila.add(aresta.w);
                     anteriores[aresta.w] = v;
                     custo[aresta.w] = custo[v] + aresta.peso;
@@ -131,12 +185,11 @@ public class Grafos {
         System.out.println("v  visitados  anteriores");
         for (int v = 0; v < grafo.getNumVertices(); v++) {
             System.out.println(
-                ANSI_PURPLE + v + "  " +
-                (visitados[v] ? ANSI_GREEN + visitados[v] : ANSI_RED + visitados[v]) + ANSI_PURPLE + "  " +
-                ANSI_BLUE + anteriores[v] + ANSI_PURPLE + "  " +
-                ANSI_CYAN + custo[v] + ANSI_PURPLE
-            );
+                    ANSI_PURPLE + v + "  " +
+                            (visitados[v] ? ANSI_GREEN + visitados[v] : ANSI_RED + visitados[v]) + ANSI_PURPLE + "  " +
+                            ANSI_BLUE + anteriores[v] + ANSI_PURPLE + "  " +
+                            ANSI_CYAN + custo[v] + ANSI_PURPLE);
         }
     }
-    
+
 }
