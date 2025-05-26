@@ -1,54 +1,39 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-public class DigrafoValorado {
-      public class Aresta {
-        public int v;
-        public int w;
-        public int peso;
-        
-        public Aresta(int v, int w, int peso) {
-            this.v = v;
+class DigrafoValorado {
+
+    public static class Aresta {
+        public final int w;
+        public final int peso;
+
+        public Aresta(int w, int peso) {
             this.w = w;
             this.peso = peso;
         }
     }
 
-    private ArrayList<Aresta>[] listaAdjacencia;
-    private int numVertices;
-    private int numArestas;
+    private final int V;
+    private final ArrayList<List<Aresta>> adj;
 
-    public DigrafoValorado(int numVertices) {
-        this.numVertices = numVertices;
-        listaAdjacencia = new ArrayList[this.numVertices];
-        for (int v = 0; v < this.numVertices; v++) {
-            listaAdjacencia[v] = new ArrayList<Aresta>();
+    public DigrafoValorado(int V) {
+        this.V = V;
+        this.adj = new ArrayList<>(V);
+        for (int v = 0; v < V; v++) {
+            this.adj.add(new LinkedList<>());
         }
-    }
-
-    public void adicionarAresta(int v, int w, int peso) {
-        Aresta e = new Aresta(v, w, peso);
-        listaAdjacencia[v].add(e);
-        numArestas++;
     }
 
     public int getNumVertices() {
-        return numVertices;
+        return V;
     }
 
-    public ArrayList<DigrafoValorado.Aresta> adjacentes(int v) {
-        return listaAdjacencia[v];
+    public void adicionarAresta(int v, int w, int peso) {
+        adj.get(v).add(new Aresta(w, peso));
     }
 
-    public String toDot() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("digraph G {").append(System.lineSeparator());
-        for (int v = 0; v < numVertices; v++) {
-            for (Aresta a : listaAdjacencia[v]) {
-                sb.append(v).append(" -> ").append(a.w).append(" [label=\"").append(a.peso).append("\"];").append(System.lineSeparator());
-            }
-        }
-        sb.append("}").append(System.lineSeparator());
-        return sb.toString();
+    public Iterable<Aresta> adjacentes(int v) {
+        return adj.get(v);
     }
-
 }

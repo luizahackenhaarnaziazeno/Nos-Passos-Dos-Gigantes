@@ -7,37 +7,26 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.Queue;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-
+import java.util.*;
 public class Grafos {
 
     private DigrafoValorado grafo;
     private boolean[] visitados;
     private int[] anteriores;
-    private int[] custo;
     private char[][] mapa;
     private int R, C;
     private int verticeInicial = -1;
 
+    final String ANSI_RESET = "\u001B[0m";
     final String ANSI_PURPLE = "\u001B[35m";
     final String ANSI_RED = "\u001B[31m";
     final String ANSI_GREEN = "\u001B[32m";
     final String ANSI_CYAN = "\u001B[36m";
     final String ANSI_BLUE = "\u001B[34m";
 
-    // --- Métodos Auxiliares (Inalterados) ---
     private int getAltura(char ch) {
-        if (ch == 'S')
-            return 0;
-        if (ch >= 'a' && ch <= 'z')
-            return ch - 'a';
+        if (ch == 'S') return 0;
+        if (ch >= 'a' && ch <= 'z') return ch - 'a';
         return Integer.MAX_VALUE;
     }
 
@@ -63,92 +52,79 @@ public class Grafos {
         final String ANSI_RED = "\u001B[31m";
         final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_CYAN = "\u001B[36m";
-        final String ANSI_BLUE = "\u001B[34m";
+        final String ANSI_RESET = "\u001B[0m";
 
         Scanner scanner = new Scanner(System.in);
 
         System.out.println(ANSI_PURPLE + "=========================================");
         System.out.println("      Bem-vindo aos Passos Dos Gigantes!");
-        System.out.println("=========================================");
+        System.out.println("=========================================" + ANSI_RESET);
         System.out.println(ANSI_CYAN + "Escolha um dos casos disponíveis:");
-        System.out.println(ANSI_GREEN + "1 - caso20");
-        System.out.println("2 - caso40");
-        System.out.println("3 - caso80");
-        System.out.println("4 - caso120");
-        System.out.println("5 - caso150");
-        System.out.println("6 - caso180");
-        System.out.println("7 - caso250");
-        System.out.println("8 - caso500");
-        System.out.print(ANSI_CYAN + "Digite o número do caso desejado: ");
+        System.out.println(ANSI_GREEN + "1 - caso020.txt");
+        System.out.println("2 - caso040.txt");
+        System.out.println("3 - caso080.txt");
+        System.out.println("4 - caso120.txt");
+        System.out.println("5 - caso150.txt");
+        System.out.println("6 - caso180.txt");
+        System.out.println("7 - caso250.txt");
+        System.out.println("8 - caso500.txt" + ANSI_RESET);
+        System.out.print(ANSI_CYAN + "Digite o número do caso desejado: " + ANSI_RESET);
 
         int opcao = scanner.nextInt();
         String arquivo = "";
 
         switch (opcao) {
-            case 1:
-                arquivo = "caso020.txt";
-                break;
-            case 2:
-                arquivo = "caso040.txt";
-                break;
-            case 3:
-                arquivo = "caso080.txt";
-                break;
-            case 4:
-                arquivo = "caso120.txt";
-                break;
-            case 5:
-                arquivo = "caso150.txt";
-                break;
-            case 6:
-                arquivo = "caso180.txt";
-                break;
-            case 7:
-                arquivo = "caso250.txt";
-                break;
-            case 8:
-                arquivo = "caso500.txt";
-                break;
+            case 1: arquivo = "caso020.txt"; break;
+            case 2: arquivo = "caso040.txt"; break;
+            case 3: arquivo = "caso080.txt"; break;
+            case 4: arquivo = "caso120.txt"; break;
+            case 5: arquivo = "caso150.txt"; break;
+            case 6: arquivo = "caso180.txt"; break;
+            case 7: arquivo = "caso250.txt"; break;
+            case 8: arquivo = "caso500.txt"; break;
             default:
-                System.out.println(ANSI_RED + "Opção inválida.");
+                System.out.println(ANSI_RED + "Opção inválida." + ANSI_RESET);
                 scanner.close();
                 return;
         }
 
-        System.out.println(ANSI_GREEN + "\nProcessando " + arquivo + "...\n");
+        System.out.println(ANSI_GREEN + "\nProcessando " + arquivo + "..." + ANSI_RESET);
         Grafos problema = new Grafos();
         try {
             problema.processarArquivoEConstruirGrafo(arquivo);
             if (problema.verticeInicial != -1) {
-                int verticeFinal = problema.Bfs(); // Agora Bfs retorna o índice final
-                problema.processarEImprimirResultado(verticeFinal); // Novo método
+                int verticeFinal = problema.Bfs();
+                problema.processarEImprimirResultado(verticeFinal);
             }
         } catch (IOException e) {
-            System.err.println(ANSI_RED + "Erro ao ler arquivo: " + e.getMessage() + ANSI_RED);
+            System.err.println(ANSI_RED + "Erro ao ler arquivo: " + e.getMessage() + ANSI_RESET);
         }
 
         scanner.close();
     }
 
     public void processarArquivoEConstruirGrafo(String nomeArquivo) throws IOException {
-        final String ANSI_PURPLE = "\u001B[35m";
         final String ANSI_RED = "\u001B[31m";
-        final String ANSI_GREEN = "\u001B[32m";
         final String ANSI_CYAN = "\u001B[36m";
-        final String ANSI_BLUE = "\u001B[34m";
+        final String ANSI_RESET = "\u001B[0m";
 
-        String pasta = "C:\\projects\\Facul\\T2 Jb\\Nos-Passos-Dos-Gigantes\\casosdeteste\\";
+        String pasta = "casosdeteste";
         String caminhoCompleto = pasta + File.separator + nomeArquivo;
         File f = new File(caminhoCompleto);
         if (!f.exists()) {
-            System.err.println(ANSI_RED + "ARQUIVO NÃO ENCONTRADO: " + f.getAbsolutePath() + ANSI_RED);
-            this.verticeInicial = -1;
-            return;
+             f = new File(nomeArquivo);
+             if (!f.exists()) {
+                System.err.println(ANSI_RED + "ARQUIVO NÃO ENCONTRADO: " + caminhoCompleto + " ou " + f.getAbsolutePath() + ANSI_RESET);
+                this.verticeInicial = -1;
+                return;
+            }
+            caminhoCompleto = nomeArquivo;
         }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(caminhoCompleto))) {
             String linha = reader.readLine();
             if (linha == null) {
-                System.out.println(ANSI_RED + "Arquivo vazio." + ANSI_RED);
+                System.out.println(ANSI_RED + "Arquivo vazio." + ANSI_RESET);
                 return;
             }
             String[] dimensoes = linha.trim().split("\\s+");
@@ -158,7 +134,7 @@ public class Grafos {
             int numVertices = R * C;
             this.grafo = new DigrafoValorado(numVertices);
             this.verticeInicial = -1;
-            System.out.println(ANSI_CYAN + "Mapa " + R + "x" + C + " carregando..." + ANSI_RED);
+            System.out.println(ANSI_CYAN + "Mapa " + R + "x" + C + " carregando..." + ANSI_RESET);
             int linhaAtual = 0;
             while ((linha = reader.readLine()) != null && linhaAtual < R) {
                 this.mapa[linhaAtual] = linha.toCharArray();
@@ -170,12 +146,12 @@ public class Grafos {
                 linhaAtual++;
             }
             if (this.verticeInicial == -1) {
-                System.err.println(ANSI_RED + "Erro: Ponto 'S' não encontrado." + ANSI_RED);
+                System.err.println(ANSI_RED + "Erro: Ponto 'S' não encontrado." + ANSI_RESET);
                 return;
             }
-            System.out.println(ANSI_CYAN + "Construindo grafo..." + ANSI_RED);
-            int[] dr = { -1, -1, -1, 0, 0, 1, 1, 1 };
-            int[] dc = { -1, 0, 1, -1, 1, -1, 0, 1 };
+            System.out.println(ANSI_CYAN + "Construindo grafo..." + ANSI_RESET);
+            int[] dr = {-1, -1, -1, 0, 0, 1, 1, 1};
+            int[] dc = {-1, 0, 1, -1, 1, -1, 0, 1};
             for (int r = 0; r < R; r++) {
                 for (int c = 0; c < C; c++) {
                     int v = PorIndex(r, c);
@@ -193,100 +169,94 @@ public class Grafos {
                     }
                 }
             }
-            System.out.println(ANSI_CYAN + "Grafo construído." + ANSI_RED);
+            System.out.println(ANSI_CYAN + "Grafo construído." + ANSI_RESET);
         }
     }
 
-    public int Bfs() { // Agora retorna o índice do 'z' encontrado
+    public int Bfs() {
         if (grafo == null || verticeInicial == -1)
             return -1;
 
         int numVertices = grafo.getNumVertices();
-        boolean[] visitados = new boolean[numVertices];
+        this.visitados = new boolean[numVertices];
         int[] distancia = new int[numVertices];
-        this.anteriores = new int[numVertices]; // Inicializa o array
+        this.anteriores = new int[numVertices];
 
         for (int v = 0; v < numVertices; v++) {
             distancia[v] = -1;
-            this.anteriores[v] = -1; // -1 indica sem antecessor
+            this.anteriores[v] = -1;
         }
 
         Queue<Integer> fila = new LinkedList<>();
 
         fila.add(verticeInicial);
-        visitados[verticeInicial] = true;
+        this.visitados[verticeInicial] = true;
         distancia[verticeInicial] = 0;
 
         while (!fila.isEmpty()) {
             int v = fila.poll();
 
             if (mapa[toRow(v)][toCol(v)] == 'z') {
-                return v; // Retorna o ÍNDICE do 'z' encontrado
+                return v;
             }
 
             for (DigrafoValorado.Aresta aresta : grafo.adjacentes(v)) {
                 int w = aresta.w;
-                if (!visitados[w]) {
-                    visitados[w] = true;
+                if (!this.visitados[w]) {
+                    this.visitados[w] = true;
                     distancia[w] = distancia[v] + 1;
-                    this.anteriores[w] = v; // GUARDA O CAMINHO
+                    this.anteriores[w] = v;
                     fila.add(w);
                 }
             }
         }
-        return -1; // Não encontrou 'z'
+        return -1;
     }
 
-    // --- NOVO: Reconstrução do Caminho ---
     private List<Integer> reconstruirCaminho(int verticeFinal) {
         List<Integer> caminho = new ArrayList<>();
         if (verticeFinal == -1 || this.anteriores == null) {
-            return caminho; // Retorna lista vazia se não achou ou não rodou BFS
+            return caminho;
         }
 
         int atual = verticeFinal;
         while (atual != -1) {
             caminho.add(atual);
-            atual = this.anteriores[atual]; // Volta para o anterior
+            atual = this.anteriores[atual];
         }
-        Collections.reverse(caminho); // Inverte para ter S -> z
+        Collections.reverse(caminho);
         return caminho;
     }
 
-    // --- NOVO: Impressão do Mapa Colorido ---
     private void imprimirMapaComCaminho(List<Integer> caminhoList) {
-        Set<Integer> caminhoSet = new HashSet<>(caminhoList); // Para lookup rápido
+        Set<Integer> caminhoSet = new HashSet<>(caminhoList);
 
-        System.out.println("\n" + ANSI_CYAN + "Mapa com o Caminho Encontrado:" + ANSI_GREEN);
+        System.out.println("\n" + ANSI_CYAN + "Mapa com o Caminho Encontrado:" + ANSI_RESET);
         for (int r = 0; r < R; r++) {
             for (int c = 0; c < C; c++) {
                 int index = PorIndex(r, c);
                 char pedra = mapa[r][c];
                 if (caminhoSet.contains(index)) {
-                    // Pinta o caminho (S, z e o meio)
-                    System.out.print(ANSI_RED + pedra + ANSI_RED);
+                    System.out.print(ANSI_RED + pedra + ANSI_RESET);
                 } else {
-                    // Imprime normalmente, talvez com cinza claro (opcional)
                     System.out.print(mapa[r][c]);
                 }
             }
-            System.out.println(); // Nova linha
+            System.out.println();
         }
         System.out.println();
     }
 
-    // --- NOVO: Método para Processar e Imprimir ---
     private void processarEImprimirResultado(int verticeFinal) {
         List<Integer> caminho = reconstruirCaminho(verticeFinal);
 
         if (verticeFinal != -1 && !caminho.isEmpty()) {
-            int passos = caminho.size() - 1; // Número de passos é o tamanho - 1
+            int passos = caminho.size() - 1;
             System.out.println(
-                    ANSI_GREEN + ">> Sucesso! Menor número de passos para chegar a 'z': " + passos + ANSI_BLUE);
-            imprimirMapaComCaminho(caminho); // Chama a impressão colorida
+                    ANSI_GREEN + ">> Sucesso! Menor número de passos para chegar a 'z': " + passos + ANSI_RESET);
+            imprimirMapaComCaminho(caminho);
         } else {
-            System.out.println(ANSI_RED + ">> Que pena! Não foi possível encontrar um caminho até 'z'." + ANSI_RED);
+            System.out.println(ANSI_RED + ">> Que pena! Não foi possível encontrar um caminho até 'z'." + ANSI_RESET);
         }
     }
-
 }
