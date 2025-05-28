@@ -23,32 +23,27 @@ public class CalcadaDosGigantes {
     private static final int[] dLinha = {-1, -1, -1, 0, 0, 1, 1, 1};
     private static final int[] dColuna = {-1, 0, 1, -1, 1, -1, 0, 1};
 
-    /**
-     * Verifica se uma dada coordenada (linha, coluna) está dentro dos limites do mapa.
-     */
+  
     private static boolean ehValido(int linha, int coluna, int linhas, int colunas) {
         return linha >= 0 && linha < linhas && coluna >= 0 && coluna < colunas;
     }
 
-    /**
-     * Obtém a altura de uma pedra, tratando 'S' como 'a'.
-     */
+ 
     private static int getAltura(char pedra) {
         if (pedra == 'S') {
-            return 'a'; // 'S' equivale à altura 'a'
+            return 'a'; 
         }
         return pedra;
     }
 
      
     public static int encontrarMenorCaminho(char[][] mapa, int linhas, int colunas) {
-        int[][] distancia = new int[linhas][colunas]; // Matriz para armazenar distâncias
+        int[][] distancia = new int[linhas][colunas]; 
         int startLinha = -1, startColuna = -1;
 
-        // Inicializa as distâncias com -1 (indicando não visitado/inalcançável)
-        // e encontra a posição inicial 'S'.
+        
         for (int i = 0; i < linhas; i++) {
-            Arrays.fill(distancia[i], -1); // Preenche a linha com -1
+            Arrays.fill(distancia[i], -1); 
             for (int j = 0; j < colunas; j++) {
                 if (mapa[i][j] == 'S') {
                     startLinha = i;
@@ -57,42 +52,39 @@ public class CalcadaDosGigantes {
             }
         }
 
-        // Se 'S' não for encontrado, retorna erro.
+        
         if (startLinha == -1) {
             System.err.println(ANSI_RED + "Erro: Ponto de partida 'S' não encontrado no mapa!" + ANSI_RESET);
             return -1;
         }
 
-        // --- Início da Lógica BFS (baseada no seu exemplo) ---
-        Queue<int[]> fila = new LinkedList<>(); // Fila armazena coordenadas [linha, coluna]
+     
+        Queue<int[]> fila = new LinkedList<>(); 
 
-        fila.add(new int[]{startLinha, startColuna}); // Adiciona a origem à fila
-        distancia[startLinha][startColuna] = 0; // Distância da origem para ela mesma é 0 (visitado)
+        fila.add(new int[]{startLinha, startColuna}); 
+        distancia[startLinha][startColuna] = 0; 
 
         while (!fila.isEmpty()) {
-            int[] vertice = fila.poll(); // Pega o próximo vértice (pedra) da fila
+            int[] vertice = fila.poll(); 
             int linhaAtual = vertice[0];
             int colunaAtual = vertice[1];
             int alturaAtual = getAltura(mapa[linhaAtual][colunaAtual]);
 
-            // Se chegamos a 'z', encontramos o caminho mais curto!
+           
             if (mapa[linhaAtual][colunaAtual] == 'z') {
                 return distancia[linhaAtual][colunaAtual];
             }
 
-            // Explora os vizinhos (equivalente a grafo.adjacentes(vertice))
             for (int i = 0; i < 8; i++) {
                 int novaLinha = linhaAtual + dLinha[i];
                 int novaColuna = colunaAtual + dColuna[i];
 
-                // Verifica se o vizinho (adjacente) é válido e não foi visitado
+              
                 if (ehValido(novaLinha, novaColuna, linhas, colunas) && distancia[novaLinha][novaColuna] == -1) {
                     int alturaVizinho = getAltura(mapa[novaLinha][novaColuna]);
 
-                    // Verifica a condição de movimento (altura) - nossa "aresta" existe?
+                   
                     if (alturaVizinho - alturaAtual <= 1) {
-                        // Se sim, adiciona à fila, marca como visitado (atribuindo distância)
-                        // e define a distância.
                         fila.add(new int[]{novaLinha, novaColuna});
                         distancia[novaLinha][novaColuna] = distancia[linhaAtual][colunaAtual] + 1;
                     }
