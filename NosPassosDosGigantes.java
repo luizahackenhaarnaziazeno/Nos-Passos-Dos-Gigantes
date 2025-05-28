@@ -149,7 +149,6 @@ public class NosPassosDosGigantes {
                     if (scanner.hasNextLine()) {
                         mapa[i] = scanner.nextLine().toCharArray();
                     } else {
-
                         System.err.println(ANSI_RED + "Erro: Entrada inesperada para " + sourceName + " (Caso "
                                 + casoNum + ")" + ANSI_RESET);
                         return;
@@ -159,15 +158,14 @@ public class NosPassosDosGigantes {
                 List<int[]> caminho = encontrarMenorCaminho(mapa, linhas, colunas);
 
                 if (caminho != null) {
+                    imprimirMapaComCaminho(mapa, caminho, null, linhas, colunas);
+
                     System.out.println(ANSI_ROYAL_BLUE + "\nO menor caminho encontrado para " + sourceName + " tem "
                             + (caminho.size() - 1) + " passos." + ANSI_RESET);
-
-                    imprimirMapaComCaminho(mapa, caminho, null, linhas, colunas);
                 } else {
+                    imprimirMapaComCaminho(mapa, null, null, linhas, colunas);
 
                     System.out.println(ANSI_YELLOW + "\nCaminho não encontrado para " + sourceName + "." + ANSI_RESET);
-
-                    imprimirMapaComCaminho(mapa, null, null, linhas, colunas);
                 }
 
                 casoNum++;
