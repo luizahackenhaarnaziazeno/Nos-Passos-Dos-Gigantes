@@ -8,11 +8,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+
 public class Grafos {
 
     private DigrafoValorado grafo;
     private boolean[] visitados;
     private int[] anteriores;
+    private int[] custo;
     private char[][] mapa;
     private int R, C;
     private int verticeInicial = -1;
@@ -93,7 +95,7 @@ public class Grafos {
         try {
             problema.processarArquivoEConstruirGrafo(arquivo);
             if (problema.verticeInicial != -1) {
-                int verticeFinal = problema.Bfs();
+                int verticeFinal = problema.Bfs(problema.grafo, problema.verticeInicial);
                 problema.processarEImprimirResultado(verticeFinal);
             }
         } catch (IOException e) {
@@ -173,43 +175,48 @@ public class Grafos {
         }
     }
 
-    public int Bfs() {
-        if (grafo == null || verticeInicial == -1)
-            return -1;
 
-        int numVertices = grafo.getNumVertices();
-        this.visitados = new boolean[numVertices];
-        int[] distancia = new int[numVertices];
-        this.anteriores = new int[numVertices];
+     public int Bfs(DigrafoValorado grafo, int origem) {
+            
+       this.grafo = grafo;
+        visitados = new boolean[grafo.getNumVertices()];
+        anteriores = new int[grafo.getNumVertices()];
+        custo = new int[grafo.getNumVertices()];
 
-        for (int v = 0; v < numVertices; v++) {
-            distancia[v] = -1;
-            this.anteriores[v] = -1;
+        for (int v = 0; v < anteriores.length; v++) {
+            anteriores[v] = -1;
+            custo[v] = Integer.MAX_VALUE; // Usar MAX_VALUE para custos não definidos 
         }
 
         Queue<Integer> fila = new LinkedList<>();
 
-        fila.add(verticeInicial);
-        this.visitados[verticeInicial] = true;
-        distancia[verticeInicial] = 0;
+        fila.add(origem);
+        visitados[origem] = true;
+        custo[origem] = 0;
 
-        while (!fila.isEmpty()) {
+           while (!fila.isEmpty()) {
             int v = fila.poll();
-
-            if (mapa[toRow(v)][toCol(v)] == 'z') {
-                return v;
-            }
-
-            for (DigrafoValorado.Aresta aresta : grafo.adjacentes(v)) {
-                int w = aresta.w;
-                if (!this.visitados[w]) {
-                    this.visitados[w] = true;
-                    distancia[w] = distancia[v] + 1;
-                    this.anteriores[w] = v;
-                    fila.add(w);
+           visitados[v] = true;
+            for(DigrafoValorado.Aresta aresta: grafo.adjacentes(v)) {
+                if(!visitados[aresta.w]) {
+                    fila.add(aresta.w);
+                    anteriores[aresta.w] = v;
+                    custo[aresta.w] = custo[v] + aresta.peso;
+                    visitados[aresta.w] = true;
                 }
             }
         }
+        System.out.println("v  visitados  anteriores");
+        for (int v = 0; v < grafo.getNumVertices(); v++) {
+            System.out.println(v + "  " + visitados[v] + "  " + anteriores[v] + "  " + custo[v]);
+        }
+        // Procurar o primeiro vértice cujo caractere é 'z' e que foi visitado
+        for (int v = 0; v < grafo.getNumVertices(); v++) {
+            if (visitados[v] && mapa[toRow(v)][toCol(v)] == 'z') {
+            return v; // Encerra o caminhamento ao encontrar o primeiro 'z'
+            }
+        }
+        // Se não encontrou nenhum 'z', retorna -1
         return -1;
     }
 
