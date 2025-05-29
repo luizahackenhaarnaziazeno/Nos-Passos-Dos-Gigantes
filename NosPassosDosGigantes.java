@@ -170,6 +170,7 @@ public class NosPassosDosGigantes {
 
                 casoNum++;
 
+
             } catch (Exception e) {
                 System.err.println(ANSI_RED + "Ocorreu um erro ao processar " + sourceName + " (Caso " + casoNum + "): "
                         + e.getMessage() + ANSI_RESET);
@@ -178,6 +179,7 @@ public class NosPassosDosGigantes {
             }
         }
     }
+
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
