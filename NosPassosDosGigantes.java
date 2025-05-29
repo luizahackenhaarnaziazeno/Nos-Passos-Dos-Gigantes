@@ -183,10 +183,10 @@ public class NosPassosDosGigantes {
     }
 
     private static double medirTempoCaminhamento(char[][] mapa, int linhas, int colunas) {
-        long inicio = System.nanoTime();
+        long inicio = System.currentTimeMillis();
         encontrarMenorCaminho(mapa, linhas, colunas);
-        long fim = System.nanoTime();
-        return (fim - inicio) / 1_000_000_000.0;
+        long fim = System.currentTimeMillis();
+        return (fim - inicio) / 1000.0;
     }
     public static void main(String[] args) {
 
