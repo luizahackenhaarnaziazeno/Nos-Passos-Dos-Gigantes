@@ -169,9 +169,6 @@ public class NosPassosDosGigantes {
                 }
 
                 casoNum++;
-               
-                double tempo = medirTempoCaminhamento(mapa, linhas, colunas);
-                System.out.println(ANSI_ROYAL_BLUE + "Tempo de execução: " + tempo + " s" + ANSI_RESET);
 
             } catch (Exception e) {
                 System.err.println(ANSI_RED + "Ocorreu um erro ao processar " + sourceName + " (Caso " + casoNum + "): "
@@ -180,13 +177,6 @@ public class NosPassosDosGigantes {
                 break;
             }
         }
-    }
-
-    private static double medirTempoCaminhamento(char[][] mapa, int linhas, int colunas) {
-        long inicio = System.currentTimeMillis();
-        encontrarMenorCaminho(mapa, linhas, colunas);
-        long fim = System.currentTimeMillis();
-        return (fim - inicio) / 1000.0;
     }
     public static void main(String[] args) {
 
