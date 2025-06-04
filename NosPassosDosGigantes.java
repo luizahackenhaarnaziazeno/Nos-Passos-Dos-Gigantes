@@ -34,14 +34,7 @@ public class NosPassosDosGigantes {
         return pedra;
     }
 
-    public static void desempenho(Runnable tarefa) {
-        long inicio = System.currentTimeMillis();
-        tarefa.run();
-        long fim = System.currentTimeMillis();
-        System.out.println(ANSI_ROYAL_BLUE+ "Tempo de execução: " + (fim - inicio) + " ms" + ANSI_RESET);
-    }
-
-    public static List<int[]> encontrarMenorCaminho(char[][] mapa, int linhas, int colunas) {
+   public static List<int[]> encontrarMenorCaminho(char[][] mapa, int linhas, int colunas) {
         int[][] distancia = new int[linhas][colunas];
         int[][][] pai = new int[linhas][colunas][2];
         int startLinha = -1, startColuna = -1;
@@ -146,6 +139,7 @@ public class NosPassosDosGigantes {
         int casoNum = 1;
 
         while (scanner.hasNextInt()) {
+    
             try {
                 int linhas = scanner.nextInt();
                 int colunas = scanner.nextInt();
@@ -162,8 +156,6 @@ public class NosPassosDosGigantes {
                     }
                 }
 
-                long inicioCaso = System.currentTimeMillis();
-
                 List<int[]> caminho = encontrarMenorCaminho(mapa, linhas, colunas);
 
                 if (caminho != null) {
@@ -179,9 +171,7 @@ public class NosPassosDosGigantes {
 
                 casoNum++;
 
-                long fimCaso = System.currentTimeMillis();
-                System.out.println(ANSI_ROYAL_BLUE + "Tempo de execução deste caso: " + (fimCaso - inicioCaso) + " ms" + ANSI_RESET);
-
+               
             } catch (Exception e) {
                 System.err.println(ANSI_RED + "Ocorreu um erro ao processar " + sourceName + " (Caso " + casoNum + "): "
                         + e.getMessage() + ANSI_RESET);
