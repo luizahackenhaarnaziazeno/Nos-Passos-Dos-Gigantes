@@ -156,7 +156,11 @@ public class NosPassosDosGigantes {
                     }
                 }
 
+
+                long startTime = System.currentTimeMillis();
                 List<int[]> caminho = encontrarMenorCaminho(mapa, linhas, colunas);
+                long endTime = System.currentTimeMillis();
+                
 
                 if (caminho != null) {
                     imprimirMapaComCaminho(mapa, caminho, null, linhas, colunas);
@@ -169,11 +173,12 @@ public class NosPassosDosGigantes {
                     System.out.println(ANSI_YELLOW + "\nCaminho não encontrado para " + sourceName + "." + ANSI_RESET);
                 }
 
-                casoNum++;
-
+                
+                System.out.println(ANSI_GREEN + "\nTempo de execução para " + sourceName + " (Caso "
+                        + sourceName + "): " + (endTime - startTime) + " ms" + ANSI_RESET);
                
             } catch (Exception e) {
-                System.err.println(ANSI_RED + "Ocorreu um erro ao processar " + sourceName + " (Caso " + casoNum + "): "
+                System.err.println(ANSI_RED + "Ocorreu um erro ao processar " + sourceName + " (Caso " + sourceName + "): "
                         + e.getMessage() + ANSI_RESET);
                 e.printStackTrace();
                 break;
